@@ -1,0 +1,8 @@
+prefix=/home/hri/auto_exploration/install
+
+Name: rrt_exploration_turtlebot
+Description: Description of rrt_exploration_turtlebot
+Version: 0.0.0
+Cflags: 
+Libs: -L/home/hri/auto_exploration/install/lib 
+Requires: 

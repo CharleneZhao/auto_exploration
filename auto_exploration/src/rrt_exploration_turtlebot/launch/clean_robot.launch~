@@ -1,0 +1,6 @@
+<launch>
+	<include file="$(find rbx1_bringup)/launch/turtlebot_minimal_kobuki.launch"/>
+	<include file="$(find rrt_exploration_turtlebot)/launch/real_one.launch"/>
+	<node name="rviz" pkg="rviz" type="rviz" args="-d $(find rbx1_nav)/nav_test.rviz" />
+	<node name="RRTexplorer" pkg="rrt_exploration_turtlebot" type="rrtexplorer1.py" args="$(find rrt_exploration_turtlebot)/rrtexplorer1.py" />
+</launch>roslaun

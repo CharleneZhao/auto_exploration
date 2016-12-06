@@ -1,0 +1,92 @@
+<!--
+  Launch file for running single robot (real robot)
+ -->
+
+<launch>
+  <param name="use_sim_time" value="false" />
+
+
+<node name="laser_driver" pkg="hokuyo_node" type="hokuyo_node">
+    <!-- Frame names -->
+    <param name="frame_id" value="base_laser_link" />
+</node>
+
+<node pkg="gmapping" type="hector_mapping" name="hector_mapping" output="screen">
+      <!-- Frame names -->
+      <param name="pub_map_odom_transform" value="true"/>
+      <param name="map_frame" value="map" />
+      <param name="base_frame" value="base_link" />
+      <param name="odom_frame" value="odom" />
+
+      <!-- Tf use -->
+      <param name="use_tf_scan_transformation" value="true"/>
+      <param name="use_tf_pose_start_estimate" value="false"/>
+
+      <!-- Map size / start point -->
+      <param name="map_resolution" value="0.1"/>
+      <param name="map_size" value="2048"/>
+      <param name="map_start_x" value="0.5"/>
+      <param name="map_start_y" value="0.5" />
+      <param name="laser_z_min_value" value = "-1.0" />
+      <param name="laser_z_max_value" value = "1.0" />
+      <param name="map_multi_res_levels" value="2" />
+
+      <param name="map_pub_period" value="2" />
+      <param name="laser_min_dist" value="0.2" />
+      <param name="laser_max_dist" value="20.0" />
+      <param name="output_timing" value="false" />
+      <param name="pub_map_scanmatch_transform" value="true" />
+      <!--<param name="tf_map_scanmatch_transform_frame_name" value="scanmatcher_frame" />-->
+
+      <!-- Map update parameters -->
+      <param name="update_factor_free" value="0.4"/>
+      <param name="update_factor_occupied" value="0.7" />
+      <param name="map_update_distance_thresh" value="0.2"/>
+      <param name="map_update_angle_thresh" value="0.06" />
+
+      <!-- Advertising config -->
+      <param name="advertise_map_service" value="true"/>
+      <param name="scan_subscriber_queue_size" value="5"/>
+      <param name="scan_topic" value="scan"/>
+</node>
+
+     <node pkg="tf" type="static_transform_publisher" name="base_to_laser_broadcaster" args="0 0 0 0 0 0 base_link base_laser_link 100"/>
+      <!-- node pkg="tf" type="static_transform_publisher" name="base_to_base_foot_broadcaster" args="0 0 0.1 0 0 0 base_footprint base_link 100"/ -->
+
+
+    <node pkg="move_base" type="move_base" respawn="false" name="move_base_node" output="screen">
+     <param name="footprint_padding" value="0.01" />
+     <param name="controller_frequency" value="15.0" />
+     <param name="controller_patience" value="3.0" />
+     <param name="oscillation_timeout" value="30.0" />
+     <param name="oscillation_distance" value="0.3" />
+     <param name="planner_patience" value="1" />
+     <param name="controller_patience" value="1" />
+     <remap from="cmd_vel" to="/mobile_base/commands/velocity"/>
+     <param name="recovery_behavior_enabled" value="true" />
+     <param name="planner_frequency" value="0"/>
+     <!--param name="clearing_rotation_allowed" value="false" /-->
+     <param name="base_local_planner" value="dwa_local_planner/DWAPlannerROS" />
+     <param name="base_global_planner" value="global_planner/GlobalPlanner" />
+     <rosparam file="$(find rrt_exploration_turtlebot)/launch/includes/costmap_common_params.yaml" command="load" ns="global_costmap" />
+     <rosparam file="$(find rrt_exploration_turtlebot)/launch/includes/costmap_common_params.yaml" command="load" ns="local_costmap" />
+     <rosparam file="$(find rrt_exploration_turtlebot)/launch/includes/local_costmap_params.yaml" command="load" />
+     <rosparam file="$(find rrt_exploration_turtlebot)/launch/includes/global_costmap_params.yaml" command="load" />
+     <rosparam file="$(find rrt_exploration_turtlebot)/launch/includes/base_local_planner_params.yaml" command="load" />
+     <param name="global_costmap/global_frame" value="map"/>
+     <param name="global_costmap/robot_base_frame" value="base_link"/>
+     <param name="global_costmap/laser_scan_sensor/sensor_frame" value="base_laser_link"/>
+     <param name="global_costmap/laser_scan_sensor/topic" value="/scan"/>
+     <param name="local_costmap/global_frame" value="odom"/>
+     <param name="local_costmap/robot_base_frame" value="base_link"/>
+     <param name="local_costmap/laser_scan_sensor/sensor_frame" value="base_laser_link"/>
+     <param name="local_costmap/laser_scan_sensor/topic" value="/scan"/>
+     <param name="local_costmap/obstacle_layer/laser_scan_sensor/topic" value="/scan"/>
+     <!--rosparam param="local_costmap/laser_scan_sensor/topic" subst_value="True">$(arg namespace)//scan</rosparam-->
+    </node>
+
+
+
+
+
+</launch>
